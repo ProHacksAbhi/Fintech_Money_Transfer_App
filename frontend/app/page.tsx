@@ -4,21 +4,42 @@ import { useState } from "react";
 import Login from "@/screens/auth/Login";
 import Register from "@/screens/auth/Register";
 import ForgotPassword from "@/screens/auth/ForgotPassword";
+import Dashboard from "@/screens/dashboard/Dashboard";
 
-type Screen = "login" | "register" | "forgot-password";
+type Screen = "login" | "register" | "forgot-password" | "dashboard";
+
+interface User {
+  email: string;
+  fullName: string;
+}
 
 export default function Page() {
   const [currentScreen, setCurrentScreen] = useState<Screen>("login");
+  const [user, setUser] = useState<User | null>(null);
 
-  const handleLoginSuccess = (user: { email: string; fullName: string }) => {
-    console.log("Login successful:", user);
-    // Handle successful login - redirect to dashboard, etc.
+  const handleLoginSuccess = (userData: User) => {
+    setUser(userData);
+    setCurrentScreen("dashboard");
   };
 
-  const handleRegisterSuccess = (user: { email: string; fullName: string }) => {
-    console.log("Registration successful:", user);
-    // Handle successful registration - redirect to dashboard or show welcome screen
+  const handleRegisterSuccess = (userData: User) => {
+    setUser(userData);
+    setCurrentScreen("dashboard");
   };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentScreen("login");
+  };
+
+  if (currentScreen === "dashboard" && user) {
+    return (
+      <Dashboard
+        user={{ name: user.fullName, email: user.email }}
+        onLogout={handleLogout}
+      />
+    );
+  }
 
   return (
     <main className="min-h-screen bg-background">
